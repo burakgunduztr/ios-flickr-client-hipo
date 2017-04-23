@@ -126,8 +126,14 @@ class ViewController: UIViewController, UITableViewDataSource, UITableViewDelega
     func searchBarSearchButtonClicked(_ searchBar: UISearchBar) {
         searchBar.resignFirstResponder()
         
+        self.isSearchActive = false
+        self.tableView.reloadData()
+        
+        let trimmedTags = searchBar.text!.replacingOccurrences(of: " ", with: "", options: [], range: nil)
+        print("trimmedTags: \(trimmedTags)")
+        
         print("Search button clicked: \(searchBar.text!)")
-        self.loadDataFromFlickrAPI(tags: searchBar.text!)
+        self.loadDataFromFlickrAPI(tags: trimmedTags)
         
     }
     

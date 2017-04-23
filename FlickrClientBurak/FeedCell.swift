@@ -7,6 +7,7 @@
 //
 
 import UIKit
+import Alamofire
 import AlamofireImage
 
 class FeedCell: UITableViewCell {
@@ -20,6 +21,8 @@ class FeedCell: UITableViewCell {
     var cachedWord: String!
     
     var wordLabel = UILabel()
+    
+    var request: Request?
 
     override func awakeFromNib() {
         super.awakeFromNib()
@@ -46,14 +49,16 @@ class FeedCell: UITableViewCell {
         self.profileImageView.layer.borderWidth = 1.0
         self.profileImageView.backgroundColor = UIColor.lightGray
         
-        self.profileImageView.topAnchor.constraint(equalTo: self.contentView.topAnchor, constant: 5).isActive = true
+        self.profileImageView.image = UIImage(named: "user")
+        
+        self.profileImageView.topAnchor.constraint(equalTo: self.contentView.topAnchor, constant: 4).isActive = true
         self.profileImageView.leftAnchor.constraint(equalTo: self.contentView.leftAnchor, constant: 10).isActive = true
         self.profileImageView.widthAnchor.constraint(equalToConstant: 36).isActive = true
         self.profileImageView.heightAnchor.constraint(equalToConstant: 36).isActive = true
         
         self.authorLabel.font = UIFont.init(name: "Avenir-Medium", size: 13)
         
-        self.authorLabel.topAnchor.constraint(equalTo: self.contentView.topAnchor, constant: 8).isActive = true
+        self.authorLabel.centerYAnchor.constraint(equalTo: self.profileImageView.centerYAnchor, constant: 0).isActive = true
         self.authorLabel.leftAnchor.constraint(equalTo: self.profileImageView.rightAnchor, constant: 7).isActive = true
         self.authorLabel.widthAnchor.constraint(equalToConstant: 120).isActive = true
         self.authorLabel.heightAnchor.constraint(equalToConstant: 30).isActive = true
@@ -72,6 +77,69 @@ class FeedCell: UITableViewCell {
         
         postImageView.image = UIImage(named: "")
         postImageView.contentMode = .scaleAspectFill
+        
+        if let author = self.post.author, let publishedUTC = self.post.published, let photoUrl = self.post.photoUrl {
+            
+            self.authorLabel.text = author
+            self.timeagoLabel.text = getTimeAgo(timeUTC: publishedUTC)
+            
+            self.reset()
+            self.loadImage(url: photoUrl)
+        }
+        
+    }
+    
+    func reset() {
+        
+        postImageView.image = nil
+        request?.cancel()
+    }
+    
+    func loadImage(url: String) {
+
+        if let image = PhotosDataManager.sharedManager.cachedImage(url) {
+            
+            self.postImageView.image = image
+            return
+        }
+        
+        downloadImage(url: url)
+        
+    }
+
+    func downloadImage(url: String) {
+        
+        request = PhotosDataManager.sharedManager.getNetworkImage(url) { image in
+            
+            self.postImageView.alpha = 0
+            self.postImageView.image = image
+            
+            let options: UIViewAnimationOptions = [.curveEaseOut]
+            UIView.animate(withDuration: 0.8, delay: 0.1, options: options, animations: {
+                
+                self.postImageView.alpha = 1.0
+                
+            }, completion: nil)
+        
+        }
+    }
+
+    
+    func getTimeAgo(timeUTC: String) -> String {
+        
+        let dateStringUTC = timeUTC
+        let dateFormatter = DateFormatter()
+        dateFormatter.locale = Locale(identifier: "en_US_POSIX")
+        dateFormatter.dateFormat = "yyyy-MM-dd HH:mm:ss X"
+        let date = dateFormatter.date(from: dateStringUTC)!
+        
+        let now = Date()
+        let formatter = DateComponentsFormatter()
+        formatter.calendar?.locale = Locale(identifier: "en_US_POSIX")
+        formatter.unitsStyle = .short
+        formatter.maximumUnitCount = 2
+        
+        return formatter.string(from: date, to: now)! + " " + NSLocalizedString("ago", comment: "added after elapsed time")
         
     }
     

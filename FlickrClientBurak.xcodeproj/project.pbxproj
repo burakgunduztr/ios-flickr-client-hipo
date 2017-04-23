@@ -15,6 +15,7 @@
 		E363D7451EAB507A00DF3FB6 /* LaunchScreen.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = E363D7431EAB507A00DF3FB6 /* LaunchScreen.storyboard */; };
 		E39EBC771EACA2BF003BB80E /* Post.swift in Sources */ = {isa = PBXBuildFile; fileRef = E39EBC761EACA2BF003BB80E /* Post.swift */; };
 		E39EBC791EAD02AA003BB80E /* FeedCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = E39EBC781EAD02AA003BB80E /* FeedCell.swift */; };
+		E39EBC7E1EAD6CF0003BB80E /* PhotoDataManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = E39EBC7D1EAD6CF0003BB80E /* PhotoDataManager.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
@@ -30,6 +31,7 @@
 		E363D7461EAB507A00DF3FB6 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
 		E39EBC761EACA2BF003BB80E /* Post.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Post.swift; sourceTree = "<group>"; };
 		E39EBC781EAD02AA003BB80E /* FeedCell.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = FeedCell.swift; sourceTree = "<group>"; };
+		E39EBC7D1EAD6CF0003BB80E /* PhotoDataManager.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = PhotoDataManager.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -86,6 +88,7 @@
 				E39EBC7C1EAD03CF003BB80E /* Controller */,
 				E39EBC7B1EAD03CA003BB80E /* View */,
 				E363D73A1EAB507A00DF3FB6 /* AppDelegate.swift */,
+				E39EBC7D1EAD6CF0003BB80E /* PhotoDataManager.swift */,
 				E363D73E1EAB507A00DF3FB6 /* Main.storyboard */,
 				E363D7411EAB507A00DF3FB6 /* Assets.xcassets */,
 				E363D7431EAB507A00DF3FB6 /* LaunchScreen.storyboard */,
@@ -245,6 +248,7 @@
 				E39EBC771EACA2BF003BB80E /* Post.swift in Sources */,
 				E39EBC791EAD02AA003BB80E /* FeedCell.swift in Sources */,
 				E363D73D1EAB507A00DF3FB6 /* ViewController.swift in Sources */,
+				E39EBC7E1EAD6CF0003BB80E /* PhotoDataManager.swift in Sources */,
 				E363D73B1EAB507A00DF3FB6 /* AppDelegate.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
