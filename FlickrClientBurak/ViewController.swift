@@ -10,19 +10,146 @@ import UIKit
 import Alamofire
 import SwiftyJSON
 
-class ViewController: UIViewController {
+class ViewController: UIViewController, UITableViewDataSource, UITableViewDelegate,
+                      UISearchControllerDelegate, UISearchBarDelegate {
+
+    @IBOutlet weak var tableView: UITableView!
+    @IBOutlet weak var searchBar: UISearchBar!
     
     var posts = [Post]()
-
+    var searchedWords = [String]()
+    
+    var isSearchActive: Bool = false
+    
     override func viewDidLoad() {
         super.viewDidLoad()
         // Do any additional setup after loading the view, typically from a nib.
         
-        self.loadDataFromFlickrAPI()
+        searchBar.delegate = self
+        searchBar.tintColor = UIColor.black
+        searchBar.placeholder = "Search"
+        searchBar.searchBarStyle = UISearchBarStyle.minimal
+        searchBar.returnKeyType = .search
+        
+        tableView.delegate = self
+        tableView.dataSource = self
+        
+        self.loadDataFromFlickrAPI(tags: "")
+
+    }
+    
+    override func didReceiveMemoryWarning() {
+        super.didReceiveMemoryWarning()
+        // Dispose of any resources that can be recreated.
+    }
+    
+    // MARK: - TableView Data Source
+    
+    func numberOfSections(in tableView: UITableView) -> Int {
+        
+        return 1
+    }
+    
+    func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
+        
+        if self.isSearchActive {
+            
+            return 5
+        }
+        else {
+            
+            return self.posts.count
+        }
+    }
+    
+    func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
+        
+        let cell = tableView.dequeueReusableCell(withIdentifier: "FeedCell") as! FeedCell
+        
+        if self.isSearchActive {
+            
+            cell.profileImageView.isHidden = true
+            cell.postImageView.isHidden = true
+            cell.authorLabel.isHidden = true
+            cell.timeagoLabel.isHidden = true
+            cell.wordLabel.isHidden = false
+            
+            cell.configureCachedWords()
+            
+        }
+        else {
+            
+            cell.profileImageView.isHidden = false
+            cell.postImageView.isHidden = false
+            cell.authorLabel.isHidden = false
+            cell.timeagoLabel.isHidden = false
+            cell.wordLabel.isHidden = true
+            
+            cell.post = self.posts[indexPath.row]
+            cell.configureFeed()
+        }
+        
+        return cell
+    }
+    
+    func tableView(_ tableView: UITableView, heightForRowAt indexPath: IndexPath) -> CGFloat {
+        
+        if self.isSearchActive {
+            
+            return 45
+        }
+        else {
+            
+            return 270
+        }
+    }
+    
+    // MARK: - SearchBar Delegate
+    func searchBarTextDidBeginEditing(_ searchBar: UISearchBar) {
+        
+        self.posts.removeAll(keepingCapacity: false)
+        self.isSearchActive = true
+        self.tableView.reloadData()
+        
+        searchBar.showsCancelButton = true
+        self.navigationController?.setNavigationBarHidden(true, animated: true)
+        
+        self.tableView.reloadData()
         
     }
     
-    func loadDataFromFlickrAPI() {
+    func searchBarTextDidEndEditing(_ searchBar: UISearchBar) {
+        
+        self.navigationController?.setNavigationBarHidden(false, animated: true)
+    }
+    
+    func searchBarSearchButtonClicked(_ searchBar: UISearchBar) {
+        searchBar.resignFirstResponder()
+        
+        print("Search button clicked: \(searchBar.text!)")
+        self.loadDataFromFlickrAPI(tags: searchBar.text!)
+        
+    }
+    
+    func searchBarCancelButtonClicked(_ searchBar: UISearchBar) {
+        
+        searchBar.resignFirstResponder()
+        searchBar.showsCancelButton = false
+        
+        self.isSearchActive = false
+        
+        if searchBar.text == "" {
+            print("Reload home posts")
+        }
+        
+        self.tableView.reloadData()
+        
+        self.loadDataFromFlickrAPI(tags: "")
+    }
+
+    // MARK: - Flickr API
+    
+    func loadDataFromFlickrAPI(tags: String) {
         
         let API_ITEMS = "items"
         let API_TITLE = "author"
@@ -33,8 +160,19 @@ class ViewController: UIViewController {
         let API_LINK = "link"
         let API_TAGS = "tags"
         
+        var urlPath = ""
+        
+        if tags != "" {
+            
+            urlPath = "https://api.flickr.com/services/feeds/photos_public.gne?\(tags)&format=json&nojsoncallback=1"
+        }
+        else {
+            
+            urlPath = "https://api.flickr.com/services/feeds/photos_public.gne?format=json&nojsoncallback=1"
+        }
+        
         // 1.Alamofire public request from Flickr API as JSON format added:
-        Alamofire.request("https://api.flickr.com/services/feeds/photos_public.gne?format=json&nojsoncallback=1").responseJSON { response in
+        Alamofire.request(urlPath).responseJSON { response in
             
             print(response.request ?? "")  // original URL request
             print(response.response ?? "") // HTTP URL response
@@ -78,11 +216,13 @@ class ViewController: UIViewController {
                         let post = Post(p_title: title, p_published: mergedDate, p_photoUrl: photoUrl, p_link: link, p_author: actualAuthor, p_tags: tags)
                         self.posts.append(post)
                         
-                        // To make sure published date sorting
-                        self.posts = self.posts.sorted { $0.published! > $1.published! }
-                        
                     }
                 }
+                
+                // To make sure published date sorting
+                self.posts = self.posts.sorted { $0.published! > $1.published! }
+                
+                self.tableView.reloadData()
                 
             case .failure(let error):
                 print(error)
@@ -90,12 +230,6 @@ class ViewController: UIViewController {
         }
         
     }
-
-    override func didReceiveMemoryWarning() {
-        super.didReceiveMemoryWarning()
-        // Dispose of any resources that can be recreated.
-    }
-
 
 }
 

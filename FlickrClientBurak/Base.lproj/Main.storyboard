@@ -21,7 +21,7 @@
                         <rect key="frame" x="0.0" y="0.0" width="375" height="667"/>
                         <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
                         <subviews>
-                            <tableView clipsSubviews="YES" contentMode="scaleToFill" alwaysBounceVertical="YES" dataMode="prototypes" style="plain" separatorStyle="default" rowHeight="65" sectionHeaderHeight="28" sectionFooterHeight="28" translatesAutoresizingMaskIntoConstraints="NO" id="h9C-K5-UPo">
+                            <tableView clipsSubviews="YES" contentMode="scaleToFill" alwaysBounceVertical="YES" dataMode="prototypes" style="plain" separatorStyle="none" rowHeight="266" sectionHeaderHeight="28" sectionFooterHeight="28" translatesAutoresizingMaskIntoConstraints="NO" id="h9C-K5-UPo">
                                 <rect key="frame" x="0.0" y="0.0" width="375" height="667"/>
                                 <color key="backgroundColor" white="1" alpha="1" colorSpace="calibratedWhite"/>
                                 <searchBar key="tableHeaderView" contentMode="redraw" id="Qyc-mg-fSZ">
@@ -30,13 +30,43 @@
                                     <textInputTraits key="textInputTraits"/>
                                 </searchBar>
                                 <prototypes>
-                                    <tableViewCell clipsSubviews="YES" contentMode="scaleToFill" selectionStyle="default" indentationWidth="10" reuseIdentifier="FeedCell" rowHeight="65" id="qMu-fo-Mby" customClass="FeedCell" customModule="FlickrClientBurak" customModuleProvider="target">
-                                        <rect key="frame" x="0.0" y="72" width="375" height="65"/>
+                                    <tableViewCell clipsSubviews="YES" contentMode="scaleToFill" selectionStyle="none" indentationWidth="10" reuseIdentifier="FeedCell" rowHeight="266" id="qMu-fo-Mby" customClass="FeedCell" customModule="FlickrClientBurak" customModuleProvider="target">
+                                        <rect key="frame" x="0.0" y="72" width="375" height="266"/>
                                         <autoresizingMask key="autoresizingMask"/>
                                         <tableViewCellContentView key="contentView" opaque="NO" clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="center" tableViewCell="qMu-fo-Mby" id="aGj-Lp-bHa">
-                                            <rect key="frame" x="0.0" y="0.0" width="375" height="64.5"/>
+                                            <rect key="frame" x="0.0" y="0.0" width="375" height="266"/>
                                             <autoresizingMask key="autoresizingMask"/>
+                                            <subviews>
+                                                <imageView clipsSubviews="YES" userInteractionEnabled="NO" contentMode="scaleAspectFill" horizontalHuggingPriority="251" verticalHuggingPriority="251" fixedFrame="YES" image="hipo" translatesAutoresizingMaskIntoConstraints="NO" id="L9E-zv-wpX">
+                                                    <rect key="frame" x="15" y="66" width="345" height="192"/>
+                                                    <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
+                                                </imageView>
+                                                <imageView clipsSubviews="YES" userInteractionEnabled="NO" contentMode="scaleToFill" horizontalHuggingPriority="251" verticalHuggingPriority="251" fixedFrame="YES" translatesAutoresizingMaskIntoConstraints="NO" id="UAn-vJ-0Iw">
+                                                    <rect key="frame" x="15" y="15" width="36" height="36"/>
+                                                    <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
+                                                </imageView>
+                                                <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" fixedFrame="YES" text="" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="q2u-nQ-uGa">
+                                                    <rect key="frame" x="59" y="23" width="143" height="21"/>
+                                                    <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
+                                                    <fontDescription key="fontDescription" name="Avenir-Book" family="Avenir" pointSize="14"/>
+                                                    <nil key="textColor"/>
+                                                    <nil key="highlightedColor"/>
+                                                </label>
+                                                <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" fixedFrame="YES" text="" textAlignment="right" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="fs3-yK-9k0">
+                                                    <rect key="frame" x="277" y="22" width="83" height="21"/>
+                                                    <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
+                                                    <fontDescription key="fontDescription" name="Avenir-Light" family="Avenir" pointSize="12"/>
+                                                    <nil key="textColor"/>
+                                                    <nil key="highlightedColor"/>
+                                                </label>
+                                            </subviews>
                                         </tableViewCellContentView>
+                                        <connections>
+                                            <outlet property="authorLabel" destination="q2u-nQ-uGa" id="5Cv-Jl-pK1"/>
+                                            <outlet property="postImageView" destination="L9E-zv-wpX" id="G1n-Oa-Mpq"/>
+                                            <outlet property="profileImageView" destination="UAn-vJ-0Iw" id="zmW-7M-nbi"/>
+                                            <outlet property="timeagoLabel" destination="fs3-yK-9k0" id="Zdy-83-uIr"/>
+                                        </connections>
                                     </tableViewCell>
                                 </prototypes>
                             </tableView>
@@ -49,11 +79,17 @@
                             <constraint firstAttribute="bottom" secondItem="h9C-K5-UPo" secondAttribute="bottom" id="wwY-qn-QC0"/>
                         </constraints>
                     </view>
-                    <navigationItem key="navigationItem" title="Flickr" id="C0E-FH-PFD"/>
+                    <navigationItem key="navigationItem" title="Flickr" id="C0E-FH-PFD">
+                        <barButtonItem key="leftBarButtonItem" title="Home" id="oev-qT-4qK"/>
+                    </navigationItem>
+                    <connections>
+                        <outlet property="searchBar" destination="Qyc-mg-fSZ" id="pPr-6i-Age"/>
+                        <outlet property="tableView" destination="h9C-K5-UPo" id="aWs-RL-y04"/>
+                    </connections>
                 </viewController>
                 <placeholder placeholderIdentifier="IBFirstResponder" id="dkx-z0-nzr" sceneMemberID="firstResponder"/>
             </objects>
-            <point key="canvasLocation" x="600" y="-547"/>
+            <point key="canvasLocation" x="861.60000000000002" y="-546.47676161919048"/>
         </scene>
         <!--Navigation Controller-->
         <scene sceneID="NfK-wY-wDr">
@@ -74,4 +110,7 @@
             <point key="canvasLocation" x="133.59999999999999" y="-545.57721139430294"/>
         </scene>
     </scenes>
+    <resources>
+        <image name="hipo" width="954" height="1176"/>
+    </resources>
 </document>
