@@ -28,6 +28,7 @@ class FeedCell: UITableViewCell {
         super.awakeFromNib()
         // Initialization code
 
+        self.postImageView.backgroundColor = UIColor.lightGray
     }
     
     func configureFeed() {
@@ -157,7 +158,7 @@ class FeedCell: UITableViewCell {
         wordLabel.rightAnchor.constraint(equalTo: self.contentView.rightAnchor).isActive = true
         wordLabel.heightAnchor.constraint(equalToConstant: 18).isActive = true
     }
-
+    
     override func setSelected(_ selected: Bool, animated: Bool) {
         super.setSelected(selected, animated: animated)
 

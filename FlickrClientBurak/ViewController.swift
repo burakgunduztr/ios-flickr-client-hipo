@@ -232,6 +232,23 @@ class ViewController: UIViewController, UITableViewDataSource, UITableViewDelega
                 
             case .failure(let error):
                 print(error)
+                
+                let alert = UIAlertController(title: "API error occured", message: "Please try to send a request again.", preferredStyle: .alert)
+                
+                let action = UIAlertAction(title: "Retry", style: .destructive) { (UIAlertAction) in
+                    
+                    if tags != "" {
+                        
+                         self.loadDataFromFlickrAPI(tags: tags)
+                    }
+                    else {
+                        
+                        self.loadDataFromFlickrAPI(tags: "")
+                    }
+                }
+                
+                alert.addAction(action)
+                self.present(alert, animated: true, completion: nil)
             }
         }
         
