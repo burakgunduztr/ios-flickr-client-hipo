@@ -23,7 +23,7 @@ class ViewController: UIViewController, UITableViewDataSource, UITableViewDelega
     var isSearchActive: Bool = false
     
     var reloadCounter: Int = 0
-    
+
     override func viewDidLoad() {
         super.viewDidLoad()
         // Do any additional setup after loading the view, typically from a nib.
@@ -68,6 +68,8 @@ class ViewController: UIViewController, UITableViewDataSource, UITableViewDelega
     func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
         
         let cell = tableView.dequeueReusableCell(withIdentifier: "FeedCell") as! FeedCell
+        
+        cell.controllerReferenceHome = self
         
         if self.isSearchActive {
             
@@ -319,6 +321,126 @@ class ViewController: UIViewController, UITableViewDataSource, UITableViewDelega
             
                 }
             }
+        }
+    }
+    
+    var statusImageView: UIImageView?
+    var startedFrame = CGRect()
+    let blackBlackgroundView = UIView()
+    var cloneImageView = UIImageView()
+    
+    var navBarCoverView = UIView()
+    
+    var closeAnimateBtn = UIButton()
+    
+    // animate image view
+    func animateImageView(postImageView: UIImageView) {
+        self.statusImageView = postImageView
+        
+        if let startingFrame = postImageView.superview?.convert(postImageView.frame, to: nil) {
+            self.startedFrame = startingFrame
+            
+            if let keyWindow = UIApplication.shared.keyWindow {
+                
+                postImageView.alpha = 0
+                blackBlackgroundView.alpha = 0
+                navBarCoverView.alpha = 0
+                
+                blackBlackgroundView.frame = self.view.frame
+                blackBlackgroundView.backgroundColor = UIColor.black
+                blackBlackgroundView.layer.zPosition = 30
+                view.addSubview(blackBlackgroundView)
+                
+                navBarCoverView.frame = CGRect(x: 0, y: 0, width: UIScreen.main.bounds.width, height: 20 + 50)
+                navBarCoverView.backgroundColor = UIColor.black
+                navBarCoverView.layer.zPosition = 36
+                navBarCoverView.alpha = 0
+                keyWindow.addSubview(navBarCoverView)
+                
+                closeAnimateBtn.frame = CGRect(x: self.view.frame.size.width - 40, y: 28, width: 27, height: 27)
+                closeAnimateBtn.backgroundColor = UIColor.clear
+                closeAnimateBtn.setImage(UIImage(named: "cancelAnimateBtn"), for: .normal)
+                closeAnimateBtn.addTarget(self, action: #selector(ViewController.zoomOutWithCancelBtn), for: .touchUpInside)
+                closeAnimateBtn.layer.zPosition = 55
+                closeAnimateBtn.contentMode = .scaleAspectFit
+                keyWindow.addSubview(closeAnimateBtn)
+                
+                cloneImageView = UIImageView()
+                cloneImageView.backgroundColor = UIColor.red
+                cloneImageView.layer.zPosition = 31
+                cloneImageView.frame = startingFrame
+                
+                cloneImageView.isUserInteractionEnabled = true
+                cloneImageView.image = postImageView.image
+                
+                cloneImageView.contentMode = .scaleAspectFill
+                cloneImageView.clipsToBounds = true
+                
+                view.addSubview(cloneImageView)
+                
+                UIView.animate(withDuration: 0.75, delay: 0, usingSpringWithDamping: 1, initialSpringVelocity: 0.5, options: .curveEaseOut, animations: {
+                    
+                    let height = (self.view.frame.size.width / startingFrame.width) * startingFrame.height + 60.0
+                    
+                    let y = self.view.frame.size.height / 2 - height / 2
+                    
+                    self.cloneImageView.frame = CGRect(x: 0, y: y, width: self.view.frame.size.width, height: height)
+                    
+                    self.blackBlackgroundView.alpha = 1
+                    self.navBarCoverView.alpha = 1
+                    
+                    UIApplication.shared.statusBarStyle = UIStatusBarStyle.default
+                    
+                }, completion: { (true) in
+                    
+                    UIView.animate(withDuration: 0.5, animations: {
+                        
+                        self.closeAnimateBtn.alpha = 1
+                    })
+                })
+            }
+        }
+    }
+    
+    func zoomOutWithCancelBtn() {
+        
+        if let startingFrame = self.statusImageView!.superview?.convert(statusImageView!.frame, to: nil) {
+            
+            UIView.animate(withDuration: 0.3, animations: {
+                
+                self.closeAnimateBtn.alpha = 0
+            })
+            
+            UIView.animate(withDuration: 0.75, animations: {
+                
+                self.navBarCoverView.alpha = 0
+                
+            }, completion: { (true) in
+                
+                self.navBarCoverView.removeFromSuperview()
+            })
+            
+            UIView.animate(withDuration: 0.75, animations: {
+                
+                self.blackBlackgroundView.alpha = 0
+                self.cloneImageView.frame = startingFrame
+                
+                self.navBarCoverView.alpha = 0
+                self.closeAnimateBtn.alpha = 0
+                
+                UIApplication.shared.statusBarStyle = UIStatusBarStyle.lightContent
+                
+            }, completion: { (true) in
+                
+                self.cloneImageView.removeFromSuperview()
+                self.blackBlackgroundView.removeFromSuperview()
+                self.statusImageView?.alpha = 1
+                
+                self.navBarCoverView.removeFromSuperview()
+                
+                self.closeAnimateBtn.removeFromSuperview()
+                
+            })
         }
     }
     

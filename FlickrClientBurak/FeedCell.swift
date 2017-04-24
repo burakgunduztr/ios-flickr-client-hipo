@@ -23,10 +23,18 @@ class FeedCell: UITableViewCell {
     var wordLabel = UILabel()
     
     var request: Request?
+    
+    var controllerReferenceHome: ViewController?
 
     override func awakeFromNib() {
         super.awakeFromNib()
         // Initialization code
+        
+        // Tap gesture for post image
+        self.postImageView.isUserInteractionEnabled = true
+        let tapEffect = UITapGestureRecognizer(target: self, action: #selector(FeedCell.tapEffectPhoto))
+        tapEffect.numberOfTapsRequired = 1
+        self.postImageView.addGestureRecognizer(tapEffect)
 
         self.postImageView.backgroundColor = UIColor.lightGray
     }
@@ -68,7 +76,6 @@ class FeedCell: UITableViewCell {
 
         self.timeagoLabel.centerYAnchor.constraint(equalTo: self.authorLabel.centerYAnchor, constant: 0).isActive = true
         self.timeagoLabel.rightAnchor.constraint(equalTo: self.contentView.rightAnchor, constant: -10).isActive = true
-        // self.timeagoLabel.widthAnchor.constraint(equalToConstant: 80).isActive = true
         self.timeagoLabel.leftAnchor.constraint(equalTo: self.authorLabel.rightAnchor, constant: 8).isActive = true
         self.timeagoLabel.heightAnchor.constraint(equalToConstant: 30).isActive = true
         
@@ -106,7 +113,6 @@ class FeedCell: UITableViewCell {
         }
         
         downloadImage(url: url)
-        
     }
 
     func downloadImage(url: String) {
@@ -122,7 +128,6 @@ class FeedCell: UITableViewCell {
                 self.postImageView.alpha = 1.0
                 
             }, completion: nil)
-        
         }
     }
 
@@ -158,6 +163,13 @@ class FeedCell: UITableViewCell {
         wordLabel.centerYAnchor.constraint(equalTo: self.contentView.centerYAnchor).isActive = true
         wordLabel.rightAnchor.constraint(equalTo: self.contentView.rightAnchor).isActive = true
         wordLabel.heightAnchor.constraint(equalToConstant: 18).isActive = true
+    }
+    
+    func tapEffectPhoto(recognizer: UITapGestureRecognizer) {
+        
+        if let _ = self.postImageView.image, let controllerHome = self.controllerReferenceHome {
+            controllerHome.animateImageView(postImageView: self.postImageView)
+        }
     }
     
     override func setSelected(_ selected: Bool, animated: Bool) {
