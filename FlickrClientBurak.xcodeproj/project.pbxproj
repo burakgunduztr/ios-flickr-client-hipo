@@ -63,6 +63,14 @@
 			name = Frameworks;
 			sourceTree = "<group>";
 		};
+		E355E3091EADE96700ECFB69 /* Service */ = {
+			isa = PBXGroup;
+			children = (
+				E39EBC7D1EAD6CF0003BB80E /* PhotoDataManager.swift */,
+			);
+			name = Service;
+			sourceTree = "<group>";
+		};
 		E363D72E1EAB507A00DF3FB6 = {
 			isa = PBXGroup;
 			children = (
@@ -84,11 +92,11 @@
 		E363D7391EAB507A00DF3FB6 /* FlickrClientBurak */ = {
 			isa = PBXGroup;
 			children = (
+				E355E3091EADE96700ECFB69 /* Service */,
 				E39EBC7A1EAD03C5003BB80E /* Model */,
 				E39EBC7C1EAD03CF003BB80E /* Controller */,
 				E39EBC7B1EAD03CA003BB80E /* View */,
 				E363D73A1EAB507A00DF3FB6 /* AppDelegate.swift */,
-				E39EBC7D1EAD6CF0003BB80E /* PhotoDataManager.swift */,
 				E363D73E1EAB507A00DF3FB6 /* Main.storyboard */,
 				E363D7411EAB507A00DF3FB6 /* Assets.xcassets */,
 				E363D7431EAB507A00DF3FB6 /* LaunchScreen.storyboard */,

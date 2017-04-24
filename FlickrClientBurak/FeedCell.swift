@@ -61,14 +61,15 @@ class FeedCell: UITableViewCell {
         
         self.authorLabel.centerYAnchor.constraint(equalTo: self.profileImageView.centerYAnchor, constant: 0).isActive = true
         self.authorLabel.leftAnchor.constraint(equalTo: self.profileImageView.rightAnchor, constant: 7).isActive = true
-        self.authorLabel.widthAnchor.constraint(equalToConstant: 120).isActive = true
+        self.authorLabel.widthAnchor.constraint(equalToConstant: 130).isActive = true
         self.authorLabel.heightAnchor.constraint(equalToConstant: 30).isActive = true
         
         self.timeagoLabel.font = UIFont.init(name: "Avenir-Light", size: 11)
 
         self.timeagoLabel.centerYAnchor.constraint(equalTo: self.authorLabel.centerYAnchor, constant: 0).isActive = true
         self.timeagoLabel.rightAnchor.constraint(equalTo: self.contentView.rightAnchor, constant: -10).isActive = true
-        self.timeagoLabel.widthAnchor.constraint(equalToConstant: 80).isActive = true
+        // self.timeagoLabel.widthAnchor.constraint(equalToConstant: 80).isActive = true
+        self.timeagoLabel.leftAnchor.constraint(equalTo: self.authorLabel.rightAnchor, constant: 8).isActive = true
         self.timeagoLabel.heightAnchor.constraint(equalToConstant: 30).isActive = true
         
         self.postImageView.topAnchor.constraint(equalTo: self.contentView.topAnchor, constant: 50).isActive = true
@@ -144,9 +145,9 @@ class FeedCell: UITableViewCell {
         
     }
     
-    func configureCachedWords() {
+    func configureCachedWords(word: String) {
         
-        wordLabel.text = "Deneme"
+        wordLabel.text = word
         wordLabel.font = UIFont.init(name: "Avenir-Light", size: 15.0)
         wordLabel.textColor = UIColor.darkGray
         self.contentView.addSubview(wordLabel)

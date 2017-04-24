@@ -15,11 +15,14 @@ class ViewController: UIViewController, UITableViewDataSource, UITableViewDelega
 
     @IBOutlet weak var tableView: UITableView!
     @IBOutlet weak var searchBar: UISearchBar!
+    @IBOutlet weak var activityIndicator: UIActivityIndicatorView!
     
     var posts = [Post]()
     var searchedWords = [String]()
     
     var isSearchActive: Bool = false
+    
+    var reloadCounter: Int = 0
     
     override func viewDidLoad() {
         super.viewDidLoad()
@@ -54,7 +57,7 @@ class ViewController: UIViewController, UITableViewDataSource, UITableViewDelega
         
         if self.isSearchActive {
             
-            return 5
+            return self.searchedWords.count
         }
         else {
             
@@ -74,7 +77,9 @@ class ViewController: UIViewController, UITableViewDataSource, UITableViewDelega
             cell.timeagoLabel.isHidden = true
             cell.wordLabel.isHidden = false
             
-            cell.configureCachedWords()
+            if searchedWords.count > 0 {
+                cell.configureCachedWords(word: self.searchedWords[indexPath.row])
+            }
             
         }
         else {
@@ -104,8 +109,27 @@ class ViewController: UIViewController, UITableViewDataSource, UITableViewDelega
         }
     }
     
+    func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
+        
+        if self.isSearchActive {
+            
+            let searchWord = self.searchedWords[indexPath.row]
+            
+            
+            self.tableView.endEditing(true)
+            self.searchBar.text = searchWord
+            self.navigationController?.setNavigationBarHidden(false, animated: true)
+            
+            self.loadDataFromFlickrAPI(tags: searchWord)
+        }
+    }
+    
     // MARK: - SearchBar Delegate
     func searchBarTextDidBeginEditing(_ searchBar: UISearchBar) {
+        
+        if let savedWords = UserDefaults.standard.object(forKey: "SEARCHED_WORDS") as? [String] {
+            self.searchedWords = savedWords
+        }
         
         self.posts.removeAll(keepingCapacity: false)
         self.isSearchActive = true
@@ -135,12 +159,31 @@ class ViewController: UIViewController, UITableViewDataSource, UITableViewDelega
         print("Search button clicked: \(searchBar.text!)")
         self.loadDataFromFlickrAPI(tags: trimmedTags)
         
+        if !self.searchedWords.contains(trimmedTags) {
+            self.searchedWords.insert(trimmedTags, at: 0)
+            self.saveSearchedWords()
+        }
+        else {
+            
+            if let index = self.searchedWords.index(of: trimmedTags) {
+                self.searchedWords.remove(at: index)
+                self.searchedWords.insert(trimmedTags, at: 0)
+                self.saveSearchedWords()
+            }
+        }
+    }
+    
+    func saveSearchedWords() {
+        
+        UserDefaults.standard.set(self.searchedWords, forKey: "SEARCHED_WORDS")
+        UserDefaults.standard.synchronize()
     }
     
     func searchBarCancelButtonClicked(_ searchBar: UISearchBar) {
         
         searchBar.resignFirstResponder()
         searchBar.showsCancelButton = false
+        searchBar.text = ""
         
         self.isSearchActive = false
         
@@ -157,6 +200,12 @@ class ViewController: UIViewController, UITableViewDataSource, UITableViewDelega
     
     func loadDataFromFlickrAPI(tags: String) {
         
+        self.isSearchActive = false
+        self.tableView.reloadData()
+        
+        activityIndicator.isHidden = false
+        activityIndicator.startAnimating()
+        
         let API_ITEMS = "items"
         let API_TITLE = "author"
         let API_PUBLISHED = "published"
@@ -170,10 +219,12 @@ class ViewController: UIViewController, UITableViewDataSource, UITableViewDelega
         
         if tags != "" {
             
-            urlPath = "https://api.flickr.com/services/feeds/photos_public.gne?\(tags)&format=json&nojsoncallback=1"
+            print("Tags exist: \(tags)")
+            urlPath = "https://api.flickr.com/services/feeds/photos_public.gne?tags=\(tags)&format=json&nojsoncallback=1"
         }
         else {
             
+            print("Tag no.")
             urlPath = "https://api.flickr.com/services/feeds/photos_public.gne?format=json&nojsoncallback=1"
         }
         
@@ -227,31 +278,75 @@ class ViewController: UIViewController, UITableViewDataSource, UITableViewDelega
                 
                 // To make sure published date sorting
                 self.posts = self.posts.sorted { $0.published! > $1.published! }
+                self.reloadCounter = 0
                 
                 self.tableView.reloadData()
+                self.activityIndicator.stopAnimating()
+                self.activityIndicator.isHidden = true
                 
             case .failure(let error):
                 print(error)
                 
-                let alert = UIAlertController(title: "API error occured", message: "Please try to send a request again.", preferredStyle: .alert)
-                
-                let action = UIAlertAction(title: "Retry", style: .destructive) { (UIAlertAction) in
+                if tags != "" {
                     
-                    if tags != "" {
+                    self.reloadCounter = 1 + self.reloadCounter
+                    
+                    if self.reloadCounter > 15 {
                         
-                         self.loadDataFromFlickrAPI(tags: tags)
+                        // Display an error
+                        self.displayErrorAlert(tags: tags)
+                    }
+                    else {
+                        
+                        self.loadDataFromFlickrAPI(tags: tags)
+                    }
+                    
+                    
+                }
+                else {
+                    
+                    self.reloadCounter = 1 + self.reloadCounter
+                    
+                    if self.reloadCounter > 15 {
+                        
+                        // Display an error
+                        self.displayErrorAlert(tags: tags)
                     }
                     else {
                         
                         self.loadDataFromFlickrAPI(tags: "")
                     }
+            
                 }
+            }
+        }
+    }
+    
+    func displayErrorAlert(tags: String) {
+        
+        self.activityIndicator.stopAnimating()
+        self.activityIndicator.isHidden = true
+        
+        let alert = UIAlertController(title: "JSON Serialization Error", message: "Invalid escape sequence around character coming from API.", preferredStyle: .alert)
+        
+        let action = UIAlertAction(title: "Retry", style: .destructive) { (UIAlertAction) in
+            
+            if tags != "" {
                 
-                alert.addAction(action)
-                self.present(alert, animated: true, completion: nil)
+                self.loadDataFromFlickrAPI(tags: tags)
+            }
+            else {
+                
+                self.loadDataFromFlickrAPI(tags: "")
             }
         }
         
+        let close = UIAlertAction(title: "Cancel", style: .default, handler: nil)
+        
+        alert.addAction(action)
+        alert.addAction(close)
+        
+        self.present(alert, animated: true, completion: nil)
     }
 
 }
